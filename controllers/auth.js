@@ -1,9 +1,12 @@
 const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/userModels');
 const Helpers = require('../Helpers/helpers');
+const dbConfig = require('../config/secret');
+
 module.exports = {
   async CreateUser(req, res) {
     // console.log(req.body);
@@ -55,9 +58,13 @@ module.exports = {
       };
       User.create(body)
         .then(user => {
+          const token = jwt.sign({ data: user }, dbConfig.secret, {
+            expiresIn: 120
+          });
+          res.cookie('auth', token);
           res
             .status(HttpStatus.CREATED)
-            .json({ message: 'User create successfully', user });
+            .json({ message: 'User create successfully', user, token });
         })
         .catch(err => {
           res
