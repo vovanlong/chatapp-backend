@@ -1,7 +1,11 @@
 const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
+const bcrypt = require('bcryptjs');
+
+const User = require('../models/userModels');
+const Helpers = require('../Helpers/helpers');
 module.exports = {
-  CreateUser(req, res) {
+  async CreateUser(req, res) {
     // console.log(req.body);
     const schema = Joi.object().keys({
       username: Joi.string()
@@ -16,10 +20,50 @@ module.exports = {
         .required()
     });
     const { error, value } = Joi.validate(req.body, schema);
+    console.log(value);
     if (error && error.details) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json({ message: error.details });
     }
+    const userEmail = await User.findOne({
+      email: Helpers.lowerCase(req.body.email)
+    });
+    if (userEmail) {
+      return res
+        .status(HttpStatus.CONFLICT)
+        .json({ message: 'Email already exist' });
+    }
+    const userName = await User.findOne({
+      username: Helpers.firstUpper(req.body.username)
+    });
+    if (userName) {
+      return res
+        .status(HttpStatus.CONFLICT)
+        .json({ message: 'Username already exist' });
+    }
+    return bcrypt.hash(value.password, 10, (err, hash) => {
+      if (err) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: 'Error hasing password' });
+      }
+      const body = {
+        username: Helpers.firstUpper(value.username),
+        email: Helpers.lowerCase(value.email),
+        password: hash
+      };
+      User.create(body)
+        .then(user => {
+          res
+            .status(HttpStatus.CREATED)
+            .json({ message: 'User create successfully', user });
+        })
+        .catch(err => {
+          res
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({ messsage: 'Error occured' });
+        });
+    });
   }
 };
