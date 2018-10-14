@@ -70,5 +70,13 @@ module.exports = {
             .json({ messsage: 'Error occured' });
         });
     });
+  },
+
+  async LoginUser(req, res) {
+    if (!req.body.username || !req.body.password) {
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ message: 'No empty fields allowed' });
+    }
   }
 };
