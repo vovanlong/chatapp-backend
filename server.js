@@ -11,6 +11,7 @@ const dbConfig = require('./config/secret');
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Content-Type', 'application/x-www-form-urlencoded');
   res.header(
     'Access-Control-Allow-Methods',
     'GET',
