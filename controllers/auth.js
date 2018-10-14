@@ -25,9 +25,7 @@ module.exports = {
     const { error, value } = Joi.validate(req.body, schema);
     console.log(value);
     if (error && error.details) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({ message: error.details });
+      return res.status(HttpStatus.BAD_REQUEST).json({ msg: error.details });
     }
     const userEmail = await User.findOne({
       email: Helpers.lowerCase(req.body.email)
