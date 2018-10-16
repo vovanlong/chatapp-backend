@@ -18,7 +18,7 @@ module.exports = {
     }
 
     return jwt.verify(token, dbConfig.secret, (err, decoded) => {
-      console.log(err);
+      // console.log(err);
 
       if (err) {
         if (err.expiredAt < new Date()) {
@@ -30,7 +30,7 @@ module.exports = {
         next();
       }
       req.user = decoded.data;
-      console.log(decoded.data);
+      // console.log(decoded.data);
       next();
     });
   }
