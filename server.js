@@ -8,6 +8,9 @@ const app = express();
 app.use(cors());
 const dbConfig = require('./config/secret');
 
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -38,12 +41,14 @@ mongoose.connect(
   { useNewUrlParser: true }
 );
 
+require('./socket/stream')(io);
+
 const auth = require('./routes/authRoutes');
 const posts = require('./routes/postRoutes');
 
 app.use('/api/chatapp', auth);
 app.use('/api/chatapp', posts);
 
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log('running on port 3000');
 });
