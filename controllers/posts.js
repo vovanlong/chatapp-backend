@@ -84,5 +84,48 @@ module.exports = {
           .status(HttpStatus.INTERNAL_SERVER_ERROR)
           .json({ message: 'Error occured' })
       );
+  },
+
+  async AddComment(req, res) {
+    // console.log(req.body);
+    const postId = req.body.postId;
+    await Post.update(
+      {
+        _id: postId
+      },
+      {
+        $push: {
+          comments: {
+            userId: req.user._id,
+            username: req.user.username,
+            comment: req.body.comment,
+            createdAt: new Date()
+          }
+        },
+        $inc: { totalLikes: 1 }
+      }
+    )
+      .then(() => {
+        res.status(HttpStatus.OK).json({ message: 'Comment added to post' });
+      })
+      .catch(err =>
+        res
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Error occured' })
+      );
+  },
+
+  async GetPost(req, res) {
+    await Post.findOne({ _id: req.params.id })
+      .populate('user')
+      .populate('comments.userId')
+      .then(post => {
+        res.status(HttpStatus.OK).json({ message: 'Post found', post });
+      })
+      .catch(err =>
+        res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Post not found', post })
+      );
   }
 };
