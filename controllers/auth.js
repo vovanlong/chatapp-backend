@@ -57,7 +57,7 @@ module.exports = {
       User.create(body)
         .then(user => {
           const token = jwt.sign({ data: user }, dbConfig.secret, {
-            expiresIn: '5h'
+            expiresIn: '2d'
           });
           res.cookie('auth', token);
           res
@@ -94,7 +94,7 @@ module.exports = {
               .json({ message: 'Password is incorrect' });
           }
           const token = jwt.sign({ data: user }, dbConfig.secret, {
-            expiresIn: '5h'
+            expiresIn: '2d'
           });
           res.cookie('auth', token);
           return res
