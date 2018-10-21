@@ -18,8 +18,6 @@ module.exports = {
     }
 
     return jwt.verify(token, dbConfig.secret, (err, decoded) => {
-      // console.log(err);
-
       if (err) {
         if (err.expiredAt < new Date()) {
           return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -30,7 +28,6 @@ module.exports = {
         next();
       }
       req.user = decoded.data;
-      // console.log(decoded.data);
       next();
     });
   }

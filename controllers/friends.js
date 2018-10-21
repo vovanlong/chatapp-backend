@@ -27,6 +27,12 @@ module.exports = {
           $push: {
             followers: {
               follower: req.user._id
+            },
+            notifications: {
+              sendId: req.user._id,
+              message: `${req.user.username} is now following you.`,
+              created: new Date(),
+              viewProfile: false
             }
           }
         }
@@ -75,6 +81,70 @@ module.exports = {
     unFollowUser()
       .then(() => {
         res.status(HttpStatus.OK).json({ message: 'UnFollowing user now' });
+      })
+      .catch(err => {
+        res
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Error occured' });
+      });
+  },
+
+  async MaxNotification(req, res) {
+    if (!req.body.deleteValue) {
+      await User.updateOne(
+        {
+          _id: req.user._id,
+          'notifications._id': req.params.id
+        },
+        {
+          $set: { 'notifications.$.read': true }
+        }
+      )
+        .then(() => {
+          res.status(HttpStatus.OK).json({ message: 'Marked as read' });
+        })
+        .catch(err => {
+          res
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Error occured' });
+        });
+    } else {
+      await User.update(
+        {
+          _id: req.user._id,
+          'notifications._id': req.params.id
+        },
+        {
+          $pull: {
+            notifications: { _id: req.params.id }
+          }
+        }
+      )
+        .then(() => {
+          res.status(HttpStatus.OK).json({ message: 'Deleted successfully' });
+        })
+        .catch(err => {
+          res
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Error occured' });
+        });
+    }
+  },
+  async MaxAllNotifications(req, res) {
+    await User.update(
+      {
+        _id: req.user._id
+      },
+      {
+        $set: { 'notifications.$[elem].read': true }
+      },
+      {
+        arrayFilters: [{ 'elem.read': false }],
+        multi: true
+      }
+    )
+      .then(() => {
+        res.status(HttpStatus.OK).json({ message: 'max all successfully' });
       })
       .catch(err => {
         res
