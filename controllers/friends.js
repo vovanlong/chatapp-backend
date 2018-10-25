@@ -129,5 +129,27 @@ module.exports = {
             .json({ message: 'Error occured' });
         });
     }
+  },
+  async MaxAllNotifications(req, res) {
+    await User.update(
+      {
+        _id: req.user._id
+      },
+      {
+        $set: { 'notifications.$[elem].read': true }
+      },
+      {
+        arrayFilters: [{ 'elem.read': false }],
+        multi: true
+      }
+    )
+      .then(() => {
+        res.status(HttpStatus.OK).json({ message: 'max all successfully' });
+      })
+      .catch(err => {
+        res
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Error occured' });
+      });
   }
 };
