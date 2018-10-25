@@ -42,6 +42,7 @@ mongoose.connect(
 );
 
 require('./socket/stream')(io);
+require('./socket/private')(io);
 
 const auth = require('./routes/authRoutes');
 const posts = require('./routes/postRoutes');

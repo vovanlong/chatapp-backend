@@ -6,8 +6,34 @@ const User = require('../models/userModels');
 const Helper = require('../Helpers/helpers');
 
 module.exports = {
+  async GetAllMessages(req, res) {
+    const { sender_Id, receiver_Id } = req.params;
+    const conversation = await Conversation.findOne({
+      $or: [
+        {
+          $and: [
+            { 'participants.senderId': sender_Id },
+            { 'participants.receiverId': receiver_Id }
+          ]
+        },
+        {
+          $and: [
+            { 'participants.senderId': receiver_Id },
+            { 'participants.receiverId': sender_Id }
+          ]
+        }
+      ]
+    }).select('_id');
+    if (conversation) {
+      const messages = await Message.findOne({
+        conversationId: conversation._id
+      });
+      res.status(HttpStatus.OK).json({ message: 'message returned', messages });
+    }
+  },
+
   SendMessage(req, res) {
-    console.log(req.params.receiver_Id);
+    // console.log(req.params.receiver_Id);
     const { sender_Id, receiver_Id } = req.params;
     Conversation.find(
       {
