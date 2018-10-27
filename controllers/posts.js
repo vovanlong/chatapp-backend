@@ -107,7 +107,7 @@ module.exports = {
             createdAt: new Date()
           }
         },
-        $inc: { totalLikes: 1 }
+        $inc: { totalLikes: 0 }
       }
     )
       .then(() => {
