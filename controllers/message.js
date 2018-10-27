@@ -52,6 +52,8 @@ module.exports = {
       },
       async (err, result) => {
         if (result.length > 0) {
+          const msg = await Message.findOne({ conversationId: result[0]._id });
+          Helper.updateChatList(req, msg);
           await Message.update(
             {
               conversationId: result[0]._id
@@ -99,6 +101,7 @@ module.exports = {
             receivername: req.body.receiverName,
             body: req.body.message
           });
+
           await User.update(
             {
               _id: req.user._id
