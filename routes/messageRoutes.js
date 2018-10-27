@@ -17,6 +17,12 @@ router.get(
   MessageCtrl.MaxReceiverMessages
 );
 
+router.get(
+  '/max-all-messages',
+  AuthHelper.VerifyToken,
+  MessageCtrl.MaxAllMessages
+);
+
 router.post(
   '/chat-messages/:sender_Id/:receiver_Id',
   AuthHelper.VerifyToken,
