@@ -29,7 +29,7 @@ module.exports = {
               follower: req.user._id
             },
             notifications: {
-              sendId: req.user._id,
+              senderId: req.user._id,
               message: `${req.user.username} is now following you.`,
               created: new Date(),
               viewProfile: false
