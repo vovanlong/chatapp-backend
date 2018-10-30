@@ -33,7 +33,6 @@ module.exports = {
   },
 
   SendMessage(req, res) {
-    // console.log(req.params.receiver_Id);
     const { sender_Id, receiver_Id } = req.params;
     Conversation.find(
       {

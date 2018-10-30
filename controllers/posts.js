@@ -22,7 +22,6 @@ module.exports = {
 
     Post.create(body)
       .then(async post => {
-        // console.log('id user' + req.user._id);
         await User.update(
           {
             _id: req.user._id
@@ -92,7 +91,6 @@ module.exports = {
   },
 
   async AddComment(req, res) {
-    // console.log(req.body);
     const postId = req.body.postId;
     await Post.update(
       {

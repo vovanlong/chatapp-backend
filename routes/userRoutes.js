@@ -14,4 +14,6 @@ router.get(
   UserCtrl.GetUserByName
 );
 
+router.post('/user/view-profile', AuthHelper.VerifyToken, UserCtrl.ProfileView);
+
 module.exports = router;

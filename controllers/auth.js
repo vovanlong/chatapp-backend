@@ -9,7 +9,6 @@ const dbConfig = require('../config/secret');
 
 module.exports = {
   async CreateUser(req, res) {
-    // console.log(req.body);
     const schema = Joi.object().keys({
       username: Joi.string()
         .min(5)
@@ -23,7 +22,6 @@ module.exports = {
         .required()
     });
     const { error, value } = Joi.validate(req.body, schema);
-    // console.log(value);
     if (error && error.details) {
       return res.status(HttpStatus.BAD_REQUEST).json({ msg: error.details });
     }

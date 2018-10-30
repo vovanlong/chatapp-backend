@@ -10,6 +10,7 @@ module.exports = {
       .populate('followers.follower')
       .populate('chatList.receiverId')
       .populate('chatList.msgId')
+      .populate('notifications.senderId')
       .then(result => {
         res.status(httpStatus.OK).json({ message: 'all users', result });
       })
@@ -27,9 +28,11 @@ module.exports = {
       .populate('followers.follower')
       .populate('chatList.receiverId')
       .populate('chatList.msgId')
+      .populate('notifications.senderId')
       .then(result => {
         res.status(httpStatus.OK).json({ message: 'User by id', result });
       })
+
       .catch(err => {
         res
           .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -44,6 +47,7 @@ module.exports = {
       .populate('followers.follower')
       .populate('chatList.receiverId')
       .populate('chatList.msgId')
+      .populate('notifications.senderId')
       .then(result => {
         res.status(httpStatus.OK).json({ message: 'User by username', result });
       })
@@ -52,5 +56,9 @@ module.exports = {
           .status(httpStatus.INTERNAL_SERVER_ERROR)
           .json({ message: 'Error occured' });
       });
+  },
+
+  async ProfileView(req, res) {
+    console.log(req.body);
   }
 };
