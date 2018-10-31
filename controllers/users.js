@@ -1,6 +1,8 @@
 const httpStatus = require('http-status-codes');
 const moment = require('moment');
 const User = require('../models/userModels');
+const Joi = require('joi');
+const bcrypt = require('bcryptjs');
 
 module.exports = {
   async GetAllUsers(req, res) {
@@ -84,5 +86,54 @@ module.exports = {
           .status(httpStatus.INTERNAL_SERVER_ERROR)
           .json({ message: 'Error occured' });
       });
+  },
+
+  async ChangePassword(req, res) {
+    const schema = Joi.object().keys({
+      cpassword: Joi.string().required(),
+      newPassword: Joi.string()
+        .min(5)
+        .required(),
+      confirmPassword: Joi.string()
+        .min(5)
+        .optional()
+    });
+
+    const { error, value } = Joi.validate(req.body, schema);
+    if (error && error.details) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: error.details });
+    }
+
+    const user = await User.findOne({
+      _id: req.user._id
+    });
+    return bcrypt.compare(value.cpassword, user.password).then(async result => {
+      if (!result) {
+        return res
+          .status(httpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Current passowd is inconrrect' });
+      }
+      const newpassword = await User.EncryptPassword(req.body.newPassword);
+      await User.update(
+        {
+          _id: req.user._id
+        },
+        {
+          password: newpassword
+        }
+      )
+        .then(result => {
+          res
+            .status(httpStatus.OK)
+            .json({ message: 'password changed successfully' });
+        })
+        .catch(err => {
+          res
+            .status(httpStatus.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Error occured' });
+        });
+    });
   }
 };

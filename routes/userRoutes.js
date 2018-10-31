@@ -15,5 +15,10 @@ router.get(
 );
 
 router.post('/user/view-profile', AuthHelper.VerifyToken, UserCtrl.ProfileView);
+router.post(
+  '/change-password',
+  AuthHelper.VerifyToken,
+  UserCtrl.ChangePassword
+);
 
 module.exports = router;
