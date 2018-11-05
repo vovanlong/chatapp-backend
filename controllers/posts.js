@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
 const cloudinary = require('cloudinary');
+const moment = require('moment');
 
 cloudinary.config({
   cloud_name: 'dkjkd0bob',
@@ -99,10 +100,18 @@ module.exports = {
 
   async GetAllPosts(req, res) {
     try {
-      const posts = await Post.find({})
+      const today = moment().startOf('day');
+      const tomorrow = moment(today).add(1, 'days');
+
+      const posts = await Post.find({
+        created: { $gte: today.toDate(), $lt: tomorrow.toDate() }
+      })
         .populate('user')
         .sort({ created: -1 });
-      const top = await Post.find({ totalLikes: { $gte: 2 } })
+      const top = await Post.find({
+        totalLikes: { $gte: 2 },
+        created: { $gte: today.toDate(), $lt: tomorrow.toDate() }
+      })
         .populate('user')
         .sort({ created: -1 });
 
