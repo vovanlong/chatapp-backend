@@ -2,6 +2,7 @@ const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
 const cloudinary = require('cloudinary');
 const moment = require('moment');
+const request = require('request');
 
 cloudinary.config({
   cloud_name: 'dkjkd0bob',
@@ -14,7 +15,6 @@ const User = require('../models/userModels');
 
 module.exports = {
   AddPost(req, res) {
-    // console.log(req.body);
     const schema = Joi.object().keys({
       post: Joi.string().required()
     });
@@ -59,9 +59,7 @@ module.exports = {
     }
 
     if (req.body.post && req.body.image) {
-      // console.log(req.body.image);
       cloudinary.uploader.upload(req.body.image, async result => {
-        console.log(result);
         const reqBody = {
           user: req.user._id,
           username: req.user.username,
@@ -115,6 +113,26 @@ module.exports = {
         .populate('user')
         .sort({ created: -1 });
 
+      const user = await User.findOne({ _id: req.user._id });
+
+      if (user.city === '' && user.country === '') {
+        request(
+          'https://geoip-db.com/json/',
+          { json: true },
+          async (err, res, body) => {
+            console.log(body);
+            await User.update(
+              {
+                _id: req.user._id
+              },
+              {
+                city: body.city,
+                country: body.country_name
+              }
+            );
+          }
+        );
+      }
       return res
         .status(HttpStatus.OK)
         .json({ message: 'All posts', posts, top });

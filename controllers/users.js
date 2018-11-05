@@ -32,7 +32,6 @@ module.exports = {
       .populate('chatList.msgId')
       .populate('notifications.senderId')
       .then(result => {
-        console.log(result.notifications);
         res.status(httpStatus.OK).json({ message: 'User by id', result });
       })
 
