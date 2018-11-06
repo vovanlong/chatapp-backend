@@ -32,7 +32,7 @@ app.use(cookieParser());
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
-  dbConfig.url,
+  'mongodb://adminchatapp:rhymastic123@ds151943.mlab.com:51943/chatapp',
   { useNewUrlParser: true }
 );
 
@@ -43,6 +43,6 @@ app.use('/api/chatapp', friends);
 app.use('/api/chatapp', message);
 app.use('/api/chatapp', image);
 
-server.listen(3000, () => {
+server.listen(process.env.PORT || 3000, () => {
   console.log('running on port 3000');
 });
